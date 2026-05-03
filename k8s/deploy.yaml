@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-backend
+  labels:
+    app: hello-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello-backend
+  template:
+    metadata:
+      labels:
+        app: hello-backend
+    spec:
+      imagePullSecrets:
+      - name: docker-registry-secret
+      containers:
+      - name: hello-backend
+        image: ghcr.io/shivamsherkar23/hello-backend:1.0.5
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        readinessProbe:
+          httpGet:
+            path: /api/hello
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /api/hello
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 15
